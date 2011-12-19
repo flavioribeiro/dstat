@@ -1204,6 +1204,7 @@ class dstat_net(dstat):
         self.totalfilter = re.compile('^(lo|bond\d+|face|.+\.\d+)$')
         self.open('/proc/net/dev')
         self.cols = 2
+        self.scale = 1000
 
     def discover(self, *objlist):
         ret = []
@@ -1250,11 +1251,9 @@ class dstat_net(dstat):
         if update:
             for name in self.set2.keys():
                 self.val[name] = [
-                    (self.set2[name][0] - self.set1[name][0]) * 1.0 / elapsed,
-                    (self.set2[name][1] - self.set1[name][1]) * 1.0 / elapsed,
+                    abs(self.set2[name][0] - self.set1[name][0]) * 8.0,
+                    abs(self.set2[name][1] - self.set1[name][1]) * 8.0,
                 ]
-                if self.val[name][0] < 0: self.val[name][0] += maxint + 1
-                if self.val[name][1] < 0: self.val[name][1] += maxint + 1
         if step == op.delay:
             self.set1.update(self.set2)
 
